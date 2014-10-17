@@ -27,6 +27,7 @@
 #include "NetworkPublicAccess.h"
 #include "platform_memory.h"
 #include "SwitchPublicAccess.h"
+#include "SDFAT.h"
 
 #include "system_LPC17xx.h"
 #include "LPC17xx.h"
@@ -62,6 +63,7 @@ const SimpleShell::ptentry_t SimpleShell::commands_table[] = {
     {"net",      SimpleShell::net_command},
     {"load",     SimpleShell::load_command},
     {"save",     SimpleShell::save_command},
+    {"remount",       SimpleShell::remount_command},
 
     // unknown command
     {NULL, NULL}
@@ -128,8 +130,8 @@ static uint32_t heapWalk(StreamOutput *stream, bool verbose)
 void SimpleShell::on_module_loaded()
 {
     this->register_for_event(ON_CONSOLE_LINE_RECEIVED);
-	this->register_for_event(ON_GCODE_RECEIVED);
-	this->register_for_event(ON_SECOND_TICK);
+    this->register_for_event(ON_GCODE_RECEIVED);
+    this->register_for_event(ON_SECOND_TICK);
 
     reset_delay_secs = 0;
 }
@@ -213,18 +215,48 @@ void SimpleShell::on_console_line_received( void *argument )
 // Convert the first parameter into an absolute path, then list the files in that path
 void SimpleShell::ls_command( string parameters, StreamOutput *stream )
 {
-    string folder = absolute_from_relative( parameters );
+    string path, opts;
+    while(!parameters.empty()) {
+        string s= shift_parameter( parameters );
+        if(s.front() == '-') {
+            opts.append(s);
+        } else {
+            path= s;
+            if(!parameters.empty()){
+                path.append(" ");
+                path.append(parameters);
+            }
+            break;
+        }
+    }
+
+    path= absolute_from_relative(path);
+
     DIR *d;
     struct dirent *p;
-    d = opendir(folder.c_str());
+    d = opendir(path.c_str());
     if (d != NULL) {
         while ((p = readdir(d)) != NULL) {
-            stream->printf("%s\r\n", lc(string(p->d_name)).c_str());
+            stream->printf("%s", lc(string(p->d_name)).c_str());
+            if(p->d_isdir){
+                stream->printf("/");
+            }else if(opts.find("-s", 0, 2) != string::npos) {
+                stream->printf(" %d", p->d_fsize);
+            }
+            stream->printf("\r\n");
         }
         closedir(d);
     } else {
-        stream->printf("Could not open directory %s \r\n", folder.c_str());
+        stream->printf("Could not open directory %s\r\n", path.c_str());
     }
+}
+
+extern SDFAT mounter;
+
+void SimpleShell::remount_command( string parameters, StreamOutput *stream )
+{
+    mounter.remount();
+    stream->printf("remounted\r\n");
 }
 
 // Delete a file
@@ -501,11 +533,12 @@ void SimpleShell::help_command( string parameters, StreamOutput *stream )
     stream->printf("Commands:\r\n");
     stream->printf("version\r\n");
     stream->printf("mem [-v]\r\n");
-    stream->printf("ls [folder]\r\n");
+    stream->printf("ls [-s] [folder]\r\n");
     stream->printf("cd folder\r\n");
     stream->printf("pwd\r\n");
     stream->printf("cat file [limit]\r\n");
     stream->printf("rm file\r\n");
+    stream->printf("remount\r\n");
     stream->printf("play file [-v]\r\n");
     stream->printf("progress - shows progress of current play\r\n");
     stream->printf("abort - abort currently playing file\r\n");
