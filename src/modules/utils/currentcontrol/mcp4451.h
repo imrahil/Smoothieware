@@ -63,16 +63,6 @@ class MCP4451 : public DigipotBase {
             return char(ceil(float((this->factor*current))));
         }
 		
-		void set_MCP4726_adress(int value)
-        {
-           ;
-        }
-		
-		void set_MCP4728_adress(int value)
-        {
-           ;
-        }
-		
         mbed::I2C* i2c;
         float currents[8];
 };

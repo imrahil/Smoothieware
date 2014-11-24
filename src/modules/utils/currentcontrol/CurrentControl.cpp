@@ -62,10 +62,10 @@ void CurrentControl::on_module_loaded()
 		digipot = new AD5206();
     }else if(chip_checksum == mcp4728_checksum) {
         digipot = new MCP4728();
-		int adress26 = THEKERNEL->config->value(mcp4726_adress)->by_default(0xC6)->as_number();;
-		int adress28 = THEKERNEL->config->value(mcp4728_adress)->by_default(0xC0)->as_number();;
-		digipot->set_MCP4726_adress(adress26);
-		digipot->set_MCP4728_adress(adress28);
+		int adress26 = THEKERNEL->config->value(mcp4726_adress)->by_default(0xC6)->as_number();
+		int adress28 = THEKERNEL->config->value(mcp4728_adress)->by_default(0xC0)->as_number();
+		static_cast<MCP4728*>(digipot)->set_MCP4726_adress(adress26);
+		static_cast<MCP4728*>(digipot)->set_MCP4728_adress(adress28);
     }else { // need a default so use smoothie
         digipot = new MCP4451();
     }
