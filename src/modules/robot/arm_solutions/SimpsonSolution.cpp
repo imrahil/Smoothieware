@@ -22,6 +22,7 @@
 
 
 #define SQ(x) powf(x, 2)
+#define ROUND(x, y) (roundf(x * 1e ## y) / 1e ## y)
 
 SimpsonSolution::SimpsonSolution(Config* config)
 {
@@ -72,7 +73,17 @@ void SimpsonSolution::cartesian_to_actuator( float cartesian_mm[], float actuato
 
 void SimpsonSolution::actuator_to_cartesian( float actuator_mm[], float cartesian_mm[] )
 {
-    // unimplemented 
+    float d = SIMPSON_ARM2_X * 2.0;
+    float i = SIMPSON_ARM2_X;
+    float j = -SIMPSON_ARM2_Y * 3.0;
+    
+    float x = (SQ(actuator_mm[0]) - SQ(actuator_mm[1]) + SQ(d)) / (2.0 * d);
+    float y = (SQ(actuator_mm[0]) - SQ(actuator_mm[2]) - SQ(x) + SQ(x-i) + SQ(j)) / (2.0 * j);
+    float z = sqrtf(SQ(actuator_mm[0]) - SQ(x) - SQ(y));
+    
+    cartesian_mm[0] = ROUND(x, 4);
+    cartesian_mm[1] = ROUND(y, 4);
+    cartesian_mm[2] = ROUND(z, 4);
 }
 
 bool SimpsonSolution::set_optional(const arm_options_t& options) {
