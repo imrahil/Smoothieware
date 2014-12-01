@@ -11,15 +11,13 @@ delta_segments_per_second                    100              # for deltas only 
                                                               # and use mm_per_line_segment
 
 
-# Arm solution configuration : Cartesian robot. Translates mm positions into stepper positions
+# Arm solution configuration : GUS Simpson robot. Translates mm positions into stepper positions
 arm_solution                                 simpson          # selects the delta arm solution
 alpha_steps_per_mm                           100              # Steps per mm for alpha stepper
 beta_steps_per_mm                            100              # Steps per mm for beta stepper
 gamma_steps_per_mm                           100              # Steps per mm for gamma stepper
 
-simpson_effector_height                      70               # Approximate Z height from shoulder swivel to wrist hinge (with hot end on bed)
-simpson_arm_length                           300              # Approximate distance between the centers of the hinge bolts when the end stop is triggered
-simpson_printable_radius                     144.37           # Actually this is distance from the arm swivel point to bed center. It corresponds to 250mm between any pair of swivel points.
+simpson_size                                 250              # Distance between shoulder pivot bolts (i.e. the vertical bolts through the bed)
 
 max_arm_length_x                             295              # For GUS, these MUST be updated with calibrated values
 max_arm_length_y                             295              # A goal is to enable auto calibration to generate these values
@@ -27,10 +25,6 @@ max_arm_length_z                             295
 shoulder_height_x                            70               #
 shoulder_height_y                            70               #
 shoulder_height_z                            70               #
-
-arm_length                                   250.0            # this is the length of an arm from hinge to hinge
-arm_radius                                   124.0            # this is the horizontal distance from hinge to hinge
-                                                              # when the effector is centered
 
 # Planner module configuration : Look-ahead and acceleration configuration
 planner_queue_size                           32               # DO NOT CHANGE THIS UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING
