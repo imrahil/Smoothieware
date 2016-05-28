@@ -47,10 +47,10 @@ void ExtruderScreen::on_refresh()
 void ExtruderScreen::display_menu_line(uint16_t line)
 {
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Back");  break;
-        case 1: THEPANEL->lcd->printf("Extrude 5mm"); break;
-        case 2: THEPANEL->lcd->printf("Retract 5mm");  break;
-        case 3: THEPANEL->lcd->printf("Settings...");  break;
+        case 0: THEPANEL->lcd->printf("Wroc");  break;
+        case 1: THEPANEL->lcd->printf("Ekstruduj 5mm"); break;
+        case 2: THEPANEL->lcd->printf("Cofnij 5mm");  break;
+        case 3: THEPANEL->lcd->printf("Ustawienia...");  break;
     }
 }
 
@@ -69,7 +69,7 @@ void ExtruderScreen::setupConfigSettings()
     auto mvs= new ModifyValuesScreen(true);  // self delete on exit
     mvs->set_parent(this);
 
-    mvs->addMenuItem("E steps/mm",
+    mvs->addMenuItem("E kroki/mm",
         // gets steps/mm for currently active extruder
         []() -> float { float *rd; if(PublicData::get_value( extruder_checksum, (void **)&rd )) return *rd; else return 0.0F; },
         [this](float v) { send_gcode("M92", 'E', v); },
@@ -77,7 +77,7 @@ void ExtruderScreen::setupConfigSettings()
         1.0F
         );
 
-    mvs->addMenuItem("Filament diameter",
+    mvs->addMenuItem("Filam. sred",
         // gets filament diameter for currently active extruder
         []() -> float { float *rd; if(PublicData::get_value( extruder_checksum, (void **)&rd )) return *(rd+1); else return 0.0F; },
         [this](float v) { send_gcode("M200", 'D', v); },
@@ -94,14 +94,14 @@ void ExtruderScreen::setupConfigSettings()
         1.0F  // Min
         );
 
-    mvs->addMenuItem("Accel", // menu name
+    mvs->addMenuItem("Akceleracja", // menu name
         []() -> float { float *rd; if(PublicData::get_value( extruder_checksum, (void **)&rd )) return *(rd+3); else return 0; }, // getter
         [this](float acc) { send_gcode("M204", 'E', acc); }, // setter
         10.0F, // increment
         1.0F   // Min
         );
 
-    mvs->addMenuItem("Retract len", // menu name
+    mvs->addMenuItem("Dlug. retr", // menu name
         []() -> float { float *rd; if(PublicData::get_value( extruder_checksum, (void **)&rd )) return *(rd+4); else return 0; }, // getter
         [this](float l) { send_gcode("M207", 'S', l); }, // setter
         0.1F, // increment

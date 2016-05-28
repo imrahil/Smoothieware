@@ -83,7 +83,7 @@ void ControlScreen::display_menu_line(uint16_t line)
 {
     // in menu mode
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Back");  break;
+        case 0: THEPANEL->lcd->printf("Wroc");  break;
         case 1: this->display_axis_line('X'); break;
         case 2: this->display_axis_line('Y'); break;
         case 3: this->display_axis_line('Z'); break;
@@ -92,7 +92,7 @@ void ControlScreen::display_menu_line(uint16_t line)
 
 void ControlScreen::display_axis_line(char axis)
 {
-    THEPANEL->lcd->printf("Move %c    %8.3f", axis, this->pos[axis - 'X']);
+    THEPANEL->lcd->printf("Przesun %c  %8.3f", axis, this->pos[axis - 'X']);
 }
 
 

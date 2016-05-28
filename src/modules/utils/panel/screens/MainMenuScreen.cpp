@@ -49,7 +49,7 @@ void MainMenuScreen::setupConfigureScreen()
     mvs->set_parent(this);
 
     // acceleration
-    mvs->addMenuItem("Acceleration", // menu name
+    mvs->addMenuItem("Akceleracja", // menu name
         []() -> float { return THEKERNEL->planner->get_acceleration(); }, // getter
         [this](float acc) { send_gcode("M204", 'S', acc); }, // setter
         10.0F, // increment
@@ -58,21 +58,21 @@ void MainMenuScreen::setupConfigureScreen()
         );
 
     // steps/mm
-    mvs->addMenuItem("X steps/mm",
+    mvs->addMenuItem("X kroki/mm",
         []() -> float { return THEKERNEL->robot->actuators[0]->get_steps_per_mm(); },
         [](float v) { THEKERNEL->robot->actuators[0]->change_steps_per_mm(v); },
         0.1F,
         1.0F
         );
 
-    mvs->addMenuItem("Y steps/mm",
+    mvs->addMenuItem("Y kroki/mm",
         []() -> float { return THEKERNEL->robot->actuators[1]->get_steps_per_mm(); },
         [](float v) { THEKERNEL->robot->actuators[1]->change_steps_per_mm(v); },
         0.1F,
         1.0F
         );
 
-    mvs->addMenuItem("Z steps/mm",
+    mvs->addMenuItem("Z kroki/mm",
         []() -> float { return THEKERNEL->robot->actuators[2]->get_steps_per_mm(); },
         [](float v) { THEKERNEL->robot->actuators[2]->change_steps_per_mm(v); },
         0.1F,
@@ -85,7 +85,7 @@ void MainMenuScreen::setupConfigureScreen()
         0.01F
         );
 
-    mvs->addMenuItem("Contrast",
+    mvs->addMenuItem("Kontrast",
         []() -> float { return THEPANEL->lcd->getContrast(); },
         [this](float v) { THEPANEL->lcd->setContrast(v); },
         1,
@@ -117,13 +117,13 @@ void MainMenuScreen::on_refresh()
 void MainMenuScreen::display_menu_line(uint16_t line)
 {
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Watch"); break;
-        case 1: if(THEKERNEL->is_halted()) THEPANEL->lcd->printf("Clear HALT"); else THEPANEL->lcd->printf(THEPANEL->is_playing() ? "Abort" : "Play"); break;
-        case 2: THEPANEL->lcd->printf("Jog"); break;
-        case 3: THEPANEL->lcd->printf("Prepare"); break;
-        case 4: THEPANEL->lcd->printf("Custom"); break;
-        case 5: THEPANEL->lcd->printf("Configure"); break;
-        case 6: THEPANEL->lcd->printf("Probe"); break;
+        case 0: THEPANEL->lcd->printf("Glowny ekran"); break;
+        case 1: if(THEKERNEL->is_halted()) THEPANEL->lcd->printf("Czysc HALT"); else THEPANEL->lcd->printf(THEPANEL->is_playing() ? "Przerwij" : "Uruchom"); break;
+        case 2: THEPANEL->lcd->printf("Przesun"); break;
+        case 3: THEPANEL->lcd->printf("Przygotuj"); break;
+        case 4: THEPANEL->lcd->printf("Wlasne"); break;
+        case 5: THEPANEL->lcd->printf("Konfiguruj"); break;
+        case 6: THEPANEL->lcd->printf("Czujnik"); break;
     }
 }
 

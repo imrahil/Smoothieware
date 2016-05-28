@@ -261,20 +261,20 @@ const char *WatchScreen::get_status()
         return THEPANEL->getMessage().c_str();
 
     if (THEKERNEL->is_halted())
-        return "HALTED Reset or M999";
+        return "HALTED Reset lub M999";
 
     if (THEPANEL->is_suspended())
-        return "Suspended";
+        return "Zatrzymane";
 
     if (THEPANEL->is_playing())
         return THEPANEL->get_playing_file();
 
     if (!THEKERNEL->conveyor->is_queue_empty())
-        return "Printing";
+        return "Drukowanie";
 
     const char *ip = get_network();
     if (ip == NULL) {
-        return "Smoothie ready";
+        return "Smoothie gotowe";
     } else {
         return ip;
     }

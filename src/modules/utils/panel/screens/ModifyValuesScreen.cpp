@@ -92,7 +92,7 @@ void ModifyValuesScreen::on_refresh()
 void ModifyValuesScreen::display_menu_line(uint16_t line)
 {
     if (line == 0) {
-        THEPANEL->lcd->printf("Back");
+        THEPANEL->lcd->printf("Wroc");
     } else {
         line--;
         const char *name = std::get<0>(menu_items[line]);

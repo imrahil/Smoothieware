@@ -68,7 +68,7 @@ void ProbeScreen::on_refresh()
 void ProbeScreen::display_menu_line(uint16_t line)
 {
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Back");  break;
+        case 0: THEPANEL->lcd->printf("Wroc");  break;
         case 1: THEPANEL->lcd->printf("Status");  break;
         case 2: THEPANEL->lcd->printf("Z Probe");  break;
     }

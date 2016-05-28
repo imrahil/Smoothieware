@@ -56,16 +56,16 @@ void PrepareScreen::on_refresh()
 void PrepareScreen::display_menu_line(uint16_t line)
 {
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Back"           ); break;
-        case 1: THEPANEL->lcd->printf("Home All Axes"  ); break;
-        case 2: THEPANEL->lcd->printf("Set Home"       ); break;
-        case 3: THEPANEL->lcd->printf("Set Z0"         ); break;
-        case 4: THEPANEL->lcd->printf("Motors off"     ); break;
+        case 0: THEPANEL->lcd->printf("Wroc"           ); break;
+        case 1: THEPANEL->lcd->printf("Zeruj wsz. osie"); break;
+        case 2: THEPANEL->lcd->printf("Ustaw zero"     ); break;
+        case 3: THEPANEL->lcd->printf("Ustaw Z0"       ); break;
+        case 4: THEPANEL->lcd->printf("Wylacz silniki" ); break;
         // these won't be accessed if no heaters or extruders
-        case 5: THEPANEL->lcd->printf("Pre Heat"       ); break;
-        case 6: THEPANEL->lcd->printf("Cool Down"      ); break;
-        case 7: THEPANEL->lcd->printf("Extruder..."    ); break;
-        case 8: THEPANEL->lcd->printf("Set Temperature"); break;
+        case 5: THEPANEL->lcd->printf("Rozgrzej"       ); break;
+        case 6: THEPANEL->lcd->printf("Wystudz"        ); break;
+        case 7: THEPANEL->lcd->printf("Ekstruder..."   ); break;
+        case 8: THEPANEL->lcd->printf("Ust temperatury"); break;
     }
 }
 

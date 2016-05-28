@@ -46,11 +46,11 @@ void JogScreen::on_refresh()
 void JogScreen::display_menu_line(uint16_t line)
 {
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("Back");  break;
-        case 1: THEPANEL->lcd->printf("Move 10.0mm      \x7E"); break;
-        case 2: THEPANEL->lcd->printf("Move  1.0mm      \x7E");  break;
-        case 3: THEPANEL->lcd->printf("Move  0.1mm      \x7E");  break;
-        case 4: THEPANEL->lcd->printf("Move  0.01mm     \x7E"); break;
+        case 0: THEPANEL->lcd->printf("Wroc");  break;
+        case 1: THEPANEL->lcd->printf("Przesun 10.0mm   \x7E"); break;
+        case 2: THEPANEL->lcd->printf("Przesun  1.0mm   \x7E");  break;
+        case 3: THEPANEL->lcd->printf("Przesun  0.1mm   \x7E");  break;
+        case 4: THEPANEL->lcd->printf("Przesun  0.01mm  \x7E"); break;
     }
 }
 

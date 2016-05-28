@@ -68,7 +68,7 @@ void CustomScreen::on_refresh()
 void CustomScreen::display_menu_line(uint16_t line)
 {
     if (line == 0) {
-        THEPANEL->lcd->printf("Back");
+        THEPANEL->lcd->printf("Wroc");
     } else {
         THEPANEL->lcd->printf(std::get<0>(menu_items[line-1]));
     }
