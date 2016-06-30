@@ -10,7 +10,7 @@
 
 #include "mbed.h" // for us_ticker_read()
 
-#include <math.h>
+#include <fastmath.h>
 #include <string>
 using std::string;
 
@@ -46,6 +46,7 @@ using std::string;
 #define  mm_per_line_segment_checksum        CHECKSUM("mm_per_line_segment")
 #define  delta_segments_per_second_checksum  CHECKSUM("delta_segments_per_second")
 #define  mm_per_arc_segment_checksum         CHECKSUM("mm_per_arc_segment")
+#define  mm_max_arc_error_checksum           CHECKSUM("mm_max_arc_error")
 #define  arc_correction_checksum             CHECKSUM("arc_correction")
 #define  x_axis_max_speed_checksum           CHECKSUM("x_axis_max_speed")
 #define  y_axis_max_speed_checksum           CHECKSUM("y_axis_max_speed")
@@ -180,7 +181,8 @@ void Robot::load_config()
     this->seek_rate           = THEKERNEL->config->value(default_seek_rate_checksum   )->by_default(  100.0F)->as_number();
     this->mm_per_line_segment = THEKERNEL->config->value(mm_per_line_segment_checksum )->by_default(    0.0F)->as_number();
     this->delta_segments_per_second = THEKERNEL->config->value(delta_segments_per_second_checksum )->by_default(0.0f   )->as_number();
-    this->mm_per_arc_segment  = THEKERNEL->config->value(mm_per_arc_segment_checksum  )->by_default(    0.5f)->as_number();
+    this->mm_per_arc_segment  = THEKERNEL->config->value(mm_per_arc_segment_checksum  )->by_default(    0.0f)->as_number();
+    this->mm_max_arc_error    = THEKERNEL->config->value(mm_max_arc_error_checksum    )->by_default(   0.01f)->as_number();
     this->arc_correction      = THEKERNEL->config->value(arc_correction_checksum      )->by_default(    5   )->as_number();
 
     this->max_speeds[X_AXIS]  = THEKERNEL->config->value(x_axis_max_speed_checksum    )->by_default(60000.0F)->as_number() / 60.0F;
@@ -213,7 +215,7 @@ void Robot::load_config()
         actuators[a] = new StepperMotor(pins[0], pins[1], pins[2]);
 
         actuators[a]->change_steps_per_mm(THEKERNEL->config->value(checksums[a][3])->by_default(a == 2 ? 2560.0F : 80.0F)->as_number());
-        actuators[a]->set_max_rate(THEKERNEL->config->value(checksums[a][4])->by_default(30000.0F)->as_number());
+        actuators[a]->set_max_rate(THEKERNEL->config->value(checksums[a][4])->by_default(30000.0F)->as_number()/60.0F); // it is in mm/min and converted to mm/sec
     }
 
     check_max_actuator_speeds(); // check the configs are sane
@@ -1000,15 +1002,15 @@ bool Robot::append_arc(Gcode * gcode, const float target[], const float offset[]
 
     // Patch from GRBL Firmware - Christoph Baumann 04072015
     // CCW angle between position and target from circle center. Only one atan2() trig computation required.
-    float angular_travel = atan2(r_axis0 * rt_axis1 - r_axis1 * rt_axis0, r_axis0 * rt_axis0 + r_axis1 * rt_axis1);
+    float angular_travel = atan2f(r_axis0 * rt_axis1 - r_axis1 * rt_axis0, r_axis0 * rt_axis0 + r_axis1 * rt_axis1);
     if (is_clockwise) { // Correct atan2 output per direction
-        if (angular_travel >= -ARC_ANGULAR_TRAVEL_EPSILON) { angular_travel -= 2 * M_PI; }
+        if (angular_travel >= -ARC_ANGULAR_TRAVEL_EPSILON) { angular_travel -= (2 * (float)M_PI); }
     } else {
-        if (angular_travel <= ARC_ANGULAR_TRAVEL_EPSILON) { angular_travel += 2 * M_PI; }
+        if (angular_travel <= ARC_ANGULAR_TRAVEL_EPSILON) { angular_travel += (2 * (float)M_PI); }
     }
 
     // Find the distance for this gcode
-    gcode->millimeters_of_travel = hypotf(angular_travel * radius, fabs(linear_travel));
+    gcode->millimeters_of_travel = hypotf(angular_travel * radius, fabsf(linear_travel));
 
     // We don't care about non-XYZ moves ( for example the extruder produces some of those )
     if( gcode->millimeters_of_travel < 0.00001F ) {
@@ -1018,9 +1020,18 @@ bool Robot::append_arc(Gcode * gcode, const float target[], const float offset[]
     // Mark the gcode as having a known distance
     this->distance_in_gcode_is_known( gcode );
 
+    // limit segments by maximum arc error
+    float arc_segment = this->mm_per_arc_segment;
+    if ((this->mm_max_arc_error > 0) && (2 * radius > this->mm_max_arc_error)) {
+        float min_err_segment = 2 * sqrtf((this->mm_max_arc_error * (2 * radius - this->mm_max_arc_error)));
+        if (this->mm_per_arc_segment < min_err_segment) {
+            arc_segment = min_err_segment;
+        }
+    }
     // Figure out how many segments for this gcode
-    uint16_t segments = floorf(gcode->millimeters_of_travel / this->mm_per_arc_segment);
+    uint16_t segments = ceilf(gcode->millimeters_of_travel / arc_segment);
 
+  //printf("Radius %f - Segment Length %f - Number of Segments %d\r\n",radius,arc_segment,segments);  // Testing Purposes ONLY   
     float theta_per_segment = angular_travel / segments;
     float linear_per_segment = linear_travel / segments;
 
